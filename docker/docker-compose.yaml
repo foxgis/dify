@@ -90,11 +90,12 @@ x-shared-env: &shared-api-worker-env
   WEB_API_CORS_ALLOW_ORIGINS: ${WEB_API_CORS_ALLOW_ORIGINS:-*}
   CONSOLE_CORS_ALLOW_ORIGINS: ${CONSOLE_CORS_ALLOW_ORIGINS:-*}
   STORAGE_TYPE: ${STORAGE_TYPE:-s3}
-  S3_ENDPOINT: ${S3_ENDPOINT:-}
+  LOCAL_STORAGE_PATH: ${LOCAL_STORAGE_PATH:-./storage}
+  S3_ENDPOINT: ${S3_ENDPOINT:-http://minio:9000}
   S3_REGION: ${S3_REGION:-us-east-1}
-  S3_BUCKET_NAME: ${S3_BUCKET_NAME:-difyai}
-  S3_ACCESS_KEY: ${S3_ACCESS_KEY:-}
-  S3_SECRET_KEY: ${S3_SECRET_KEY:-}
+  S3_BUCKET_NAME: ${S3_BUCKET_NAME:-dify}
+  S3_ACCESS_KEY: ${S3_ACCESS_KEY:-minioadmin}
+  S3_SECRET_KEY: ${S3_SECRET_KEY:-minioadmin}
   S3_USE_AWS_MANAGED_IAM: ${S3_USE_AWS_MANAGED_IAM:-false}
   VECTOR_STORE: ${VECTOR_STORE:-pgvector}
   VECTOR_INDEX_NAME_PREFIX: ${VECTOR_INDEX_NAME_PREFIX:-Vector_index}
@@ -233,20 +234,20 @@ x-shared-env: &shared-api-worker-env
   PLUGIN_PYTHON_ENV_INIT_TIMEOUT: ${PLUGIN_PYTHON_ENV_INIT_TIMEOUT:-120}
   PLUGIN_MAX_EXECUTION_TIMEOUT: ${PLUGIN_MAX_EXECUTION_TIMEOUT:-600}
   PIP_MIRROR_URL: ${PIP_MIRROR_URL:-}
-  PLUGIN_STORAGE_TYPE: ${PLUGIN_STORAGE_TYPE:-aws_s3}
+  PLUGIN_STORAGE_TYPE: ${PLUGIN_STORAGE_TYPE:-local}
   PLUGIN_STORAGE_LOCAL_ROOT: ${PLUGIN_STORAGE_LOCAL_ROOT:-/app/storage}
   PLUGIN_WORKING_PATH: ${PLUGIN_WORKING_PATH:-/app/storage/cwd}
   PLUGIN_INSTALLED_PATH: ${PLUGIN_INSTALLED_PATH:-plugin}
   PLUGIN_PACKAGE_CACHE_PATH: ${PLUGIN_PACKAGE_CACHE_PATH:-plugin_packages}
   PLUGIN_MEDIA_CACHE_PATH: ${PLUGIN_MEDIA_CACHE_PATH:-assets}
-  PLUGIN_STORAGE_OSS_BUCKET: ${PLUGIN_STORAGE_OSS_BUCKET:-dify_plugin}
+  PLUGIN_STORAGE_OSS_BUCKET: ${PLUGIN_STORAGE_OSS_BUCKET:-dify-plugin}
   PLUGIN_S3_USE_AWS: ${PLUGIN_S3_USE_AWS:-true}
   PLUGIN_S3_USE_AWS_MANAGED_IAM: ${PLUGIN_S3_USE_AWS_MANAGED_IAM:-false}
-  PLUGIN_S3_ENDPOINT: ${PLUGIN_S3_ENDPOINT:-}
-  PLUGIN_S3_USE_PATH_STYLE: ${PLUGIN_S3_USE_PATH_STYLE:-false}
-  PLUGIN_AWS_ACCESS_KEY: ${PLUGIN_AWS_ACCESS_KEY:-}
-  PLUGIN_AWS_SECRET_KEY: ${PLUGIN_AWS_SECRET_KEY:-}
-  PLUGIN_AWS_REGION: ${PLUGIN_AWS_REGION:-}
+  PLUGIN_S3_ENDPOINT: ${PLUGIN_S3_ENDPOINT:-http://minio:9000}
+  PLUGIN_S3_USE_PATH_STYLE: ${PLUGIN_S3_USE_PATH_STYLE:-true}
+  PLUGIN_AWS_ACCESS_KEY: ${PLUGIN_AWS_ACCESS_KEY:-minioadmin}
+  PLUGIN_AWS_SECRET_KEY: ${PLUGIN_AWS_SECRET_KEY:-minioadmin}
+  PLUGIN_AWS_REGION: ${PLUGIN_AWS_REGION:-us-east-1}
   ENABLE_OTEL: ${ENABLE_OTEL:-false}
   OTLP_TRACE_ENDPOINT: ${OTLP_TRACE_ENDPOINT:-}
   OTLP_METRIC_ENDPOINT: ${OTLP_METRIC_ENDPOINT:-}
@@ -291,6 +292,9 @@ services:
       PLUGIN_REMOTE_INSTALL_PORT: ${EXPOSE_PLUGIN_DEBUGGING_PORT:-5003}
       PLUGIN_MAX_PACKAGE_SIZE: ${PLUGIN_MAX_PACKAGE_SIZE:-52428800}
       INNER_API_KEY_FOR_PLUGIN: ${PLUGIN_DIFY_INNER_API_KEY:-QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1}
+    depends_on:
+      redis:
+        condition: service_started
     volumes:
       # Mount the storage directory to the container, for storing user files.
       - ./volumes/app/storage:/app/api/storage
@@ -313,6 +317,9 @@ services:
       SENTRY_PROFILES_SAMPLE_RATE: ${API_SENTRY_PROFILES_SAMPLE_RATE:-1.0}
       PLUGIN_MAX_PACKAGE_SIZE: ${PLUGIN_MAX_PACKAGE_SIZE:-52428800}
       INNER_API_KEY_FOR_PLUGIN: ${PLUGIN_DIFY_INNER_API_KEY:-QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1}
+    depends_on:
+      redis:
+        condition: service_started
     volumes:
       # Mount the storage directory to the container, for storing user files.
       - ./volumes/app/storage:/app/api/storage
@@ -330,6 +337,9 @@ services:
       <<: *shared-api-worker-env
       # Startup mode, 'worker_beat' starts the Celery beat for scheduling periodic tasks.
       MODE: beat
+    depends_on:
+      redis:
+        condition: service_started
     networks:
       - ssrf_proxy_network
       - default
