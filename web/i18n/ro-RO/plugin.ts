@@ -6,6 +6,8 @@ const translation = {
     tools: 'Instrumente',
     extensions: 'Extensii',
     models: 'Modele',
+    datasources: 'Surse de date',
+    triggers: 'Declanșatori',
   },
   categorySingle: {
     tool: 'Unealtă',
@@ -13,6 +15,8 @@ const translation = {
     extension: 'Extensie',
     agent: 'Strategia agentului',
     model: 'Model',
+    datasource: 'Sursa datelor',
+    trigger: 'Declanșator',
   },
   list: {
     source: {
@@ -43,6 +47,7 @@ const translation = {
       install: 'Instala',
       detail: 'Detalii',
       info: 'Informații despre plugin',
+      back: 'Înapoi',
     },
     toolSelector: {
       unsupportedContent: 'Versiunea de plugin instalată nu oferă această acțiune.',
@@ -249,6 +254,9 @@ const translation = {
     unavailable: 'Necesar',
     customCredentialUnavailable: 'Credentialele personalizate sunt în prezent indisponibile',
     credentialUnavailable: 'Credențialele nu sunt disponibile în acest moment. Vă rugăm să contactați administratorul.',
+    credentialUnavailableInButton: 'Credential indisponibil',
+    connectedWorkspace: 'Spațiu de lucru conectat',
+    emptyAuth: 'Vă rugăm să configurați autentificarea',
   },
   deprecated: 'Încetat de a mai fi utilizat',
   autoUpdate: {
@@ -300,6 +308,12 @@ const translation = {
     partialUPdate: 'Numai următoarele {{num}} pluginuri se vor actualiza automat',
     updateTime: 'Timp de actualizare',
     nextUpdateTime: 'Următoarea actualizare automată: {{time}}',
+  },
+  readmeInfo: {
+    title: 'Citiți-mă',
+    needHelpCheckReadme: 'Ai nevoie de ajutor? Verifică fișierul README.',
+    noReadmeAvailable: 'Nu există fișier README disponibil',
+    failedToFetch: 'Nu s-a putut prelua README',
   },
 }
 

@@ -1,5 +1,6 @@
 import type { FC } from 'react'
 import { useEffect, useMemo } from 'react'
+import { usePathname } from 'next/navigation'
 import { Command } from 'cmdk'
 import { useTranslation } from 'react-i18next'
 import type { ActionItem } from './actions/types'
@@ -16,18 +17,20 @@ type Props = {
 
 const CommandSelector: FC<Props> = ({ actions, onCommandSelect, searchFilter, commandValue, onCommandValueChange, originalQuery }) => {
   const { t } = useTranslation()
+  const pathname = usePathname()
 
   // Check if we're in slash command mode
   const isSlashMode = originalQuery?.trim().startsWith('/') || false
 
   // Get slash commands from registry
+  // Note: pathname is included in deps because some commands (like /zen) check isAvailable based on current route
   const slashCommands = useMemo(() => {
     if (!isSlashMode) return []
 
-    const allCommands = slashCommandRegistry.getAllCommands()
+    const availableCommands = slashCommandRegistry.getAvailableCommands()
     const filter = searchFilter?.toLowerCase() || '' // searchFilter already has '/' removed
 
-    return allCommands.filter((cmd) => {
+    return availableCommands.filter((cmd) => {
       if (!filter) return true
       return cmd.name.toLowerCase().includes(filter)
     }).map(cmd => ({
@@ -36,7 +39,7 @@ const CommandSelector: FC<Props> = ({ actions, onCommandSelect, searchFilter, co
       title: cmd.name,
       description: cmd.description,
     }))
-  }, [isSlashMode, searchFilter])
+  }, [isSlashMode, searchFilter, pathname])
 
   const filteredActions = useMemo(() => {
     if (isSlashMode) return []
@@ -79,8 +82,8 @@ const CommandSelector: FC<Props> = ({ actions, onCommandSelect, searchFilter, co
   }
 
   return (
-    <div className="p-4">
-      <div className="mb-3 text-left text-sm font-medium text-text-secondary">
+    <div className="px-4 py-3">
+      <div className="mb-2 text-left text-sm font-medium text-text-secondary">
         {isSlashMode ? t('app.gotoAnything.groups.commands') : t('app.gotoAnything.selectSearchType')}
       </div>
       <Command.Group className="space-y-1">
@@ -89,7 +92,7 @@ const CommandSelector: FC<Props> = ({ actions, onCommandSelect, searchFilter, co
             key={item.key}
             value={item.shortcut}
             className="flex cursor-pointer items-center rounded-md
-                     p-2.5
+                     p-2
                      transition-all
                      duration-150 hover:bg-state-base-hover aria-[selected=true]:bg-state-base-hover-alt"
             onSelect={() => onCommandSelect(item.shortcut)}
@@ -105,8 +108,9 @@ const CommandSelector: FC<Props> = ({ actions, onCommandSelect, searchFilter, co
                     '/language': 'app.gotoAnything.actions.languageChangeDesc',
                     '/account': 'app.gotoAnything.actions.accountDesc',
                     '/feedback': 'app.gotoAnything.actions.feedbackDesc',
-                    '/doc': 'app.gotoAnything.actions.docDesc',
+                    '/docs': 'app.gotoAnything.actions.docDesc',
                     '/community': 'app.gotoAnything.actions.communityDesc',
+                    '/zen': 'app.gotoAnything.actions.zenDesc',
                   }
                   return t(slashKeyMap[item.key] || item.description)
                 })()

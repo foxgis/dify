@@ -6,6 +6,8 @@ const translation = {
     models: 'Modelos',
     agents: 'Estratégias do agente',
     tools: 'Ferramentas',
+    datasources: 'Fontes de dados',
+    triggers: 'Gatilhos',
   },
   categorySingle: {
     model: 'Modelo',
@@ -13,6 +15,8 @@ const translation = {
     agent: 'Estratégia do agente',
     extension: 'Extensão',
     tool: 'Ferramenta',
+    datasource: 'Fonte de dados',
+    trigger: 'Gatilho',
   },
   list: {
     source: {
@@ -43,6 +47,7 @@ const translation = {
       detail: 'Detalhes',
       remove: 'Retirar',
       viewDetail: 'Ver detalhes',
+      back: 'Voltar',
     },
     toolSelector: {
       uninstalledLink: 'Gerenciar em plug-ins',
@@ -249,6 +254,9 @@ const translation = {
     customCredentialUnavailable: 'Credenciais personalizadas atualmente indisponíveis',
     unavailable: 'Indisponível',
     credentialUnavailable: 'Credenciais atualmente indisponíveis. Por favor, contate o administrador.',
+    credentialUnavailableInButton: 'Credencial indisponível',
+    emptyAuth: 'Configure a autenticação',
+    connectedWorkspace: 'Espaço de trabalho conectado',
   },
   deprecated: 'Obsoleto',
   autoUpdate: {
@@ -300,6 +308,12 @@ const translation = {
     nextUpdateTime: 'Próxima atualização automática: {{time}}',
     partialUPdate: 'Apenas os seguintes {{num}} plugins serão atualizados automaticamente',
     updateSettings: 'Atualizar Configurações',
+  },
+  readmeInfo: {
+    title: 'LEIA-ME',
+    needHelpCheckReadme: 'Precisa de ajuda? Confira o README.',
+    noReadmeAvailable: 'Nenhum README disponível',
+    failedToFetch: 'Falha ao buscar o README',
   },
 }
 

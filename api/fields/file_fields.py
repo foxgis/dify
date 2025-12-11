@@ -9,6 +9,8 @@ upload_config_fields = {
     "video_file_size_limit": fields.Integer,
     "audio_file_size_limit": fields.Integer,
     "workflow_file_upload_limit": fields.Integer,
+    "image_file_batch_limit": fields.Integer,
+    "single_chunk_attachment_limit": fields.Integer,
 }
 
 
@@ -33,6 +35,7 @@ file_fields = {
     "created_by": fields.String,
     "created_at": TimestampField,
     "preview_url": fields.String,
+    "source_url": fields.String,
 }
 
 

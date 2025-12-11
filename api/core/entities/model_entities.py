@@ -1,6 +1,5 @@
 from collections.abc import Sequence
-from enum import Enum
-from typing import Optional
+from enum import StrEnum, auto
 
 from pydantic import BaseModel, ConfigDict
 
@@ -9,16 +8,16 @@ from core.model_runtime.entities.model_entities import ModelType, ProviderModel
 from core.model_runtime.entities.provider_entities import ProviderEntity
 
 
-class ModelStatus(Enum):
+class ModelStatus(StrEnum):
     """
     Enum class for model status.
     """
 
-    ACTIVE = "active"
+    ACTIVE = auto()
     NO_CONFIGURE = "no-configure"
     QUOTA_EXCEEDED = "quota-exceeded"
     NO_PERMISSION = "no-permission"
-    DISABLED = "disabled"
+    DISABLED = auto()
     CREDENTIAL_REMOVED = "credential-removed"
 
 
@@ -29,11 +28,12 @@ class SimpleModelProviderEntity(BaseModel):
 
     provider: str
     label: I18nObject
-    icon_small: Optional[I18nObject] = None
-    icon_large: Optional[I18nObject] = None
+    icon_small: I18nObject | None = None
+    icon_small_dark: I18nObject | None = None
+    icon_large: I18nObject | None = None
     supported_model_types: list[ModelType]
 
-    def __init__(self, provider_entity: ProviderEntity) -> None:
+    def __init__(self, provider_entity: ProviderEntity):
         """
         Init simple provider.
 
@@ -43,6 +43,7 @@ class SimpleModelProviderEntity(BaseModel):
             provider=provider_entity.provider,
             label=provider_entity.label,
             icon_small=provider_entity.icon_small,
+            icon_small_dark=provider_entity.icon_small_dark,
             icon_large=provider_entity.icon_large,
             supported_model_types=provider_entity.supported_model_types,
         )
@@ -57,7 +58,7 @@ class ProviderModelWithStatusEntity(ProviderModel):
     load_balancing_enabled: bool = False
     has_invalid_load_balancing_configs: bool = False
 
-    def raise_for_status(self) -> None:
+    def raise_for_status(self):
         """
         Check model status and raise ValueError if not active.
 
@@ -92,8 +93,8 @@ class DefaultModelProviderEntity(BaseModel):
 
     provider: str
     label: I18nObject
-    icon_small: Optional[I18nObject] = None
-    icon_large: Optional[I18nObject] = None
+    icon_small: I18nObject | None = None
+    icon_large: I18nObject | None = None
     supported_model_types: Sequence[ModelType] = []
 
 
