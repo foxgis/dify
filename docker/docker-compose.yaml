@@ -297,7 +297,7 @@ x-shared-env: &shared-api-worker-env
   QUEUE_MONITOR_THRESHOLD: ${QUEUE_MONITOR_THRESHOLD:-200}
   QUEUE_MONITOR_ALERT_EMAILS: ${QUEUE_MONITOR_ALERT_EMAILS:-}
   QUEUE_MONITOR_INTERVAL: ${QUEUE_MONITOR_INTERVAL:-30}
-  SWAGGER_UI_ENABLED: ${SWAGGER_UI_ENABLED:-true}
+  SWAGGER_UI_ENABLED: ${SWAGGER_UI_ENABLED:-false}
   SWAGGER_UI_PATH: ${SWAGGER_UI_PATH:-/swagger-ui.html}
   DSL_EXPORT_ENCRYPT_DATASET_ID: ${DSL_EXPORT_ENCRYPT_DATASET_ID:-true}
   DATASET_MAX_SEGMENTS_PER_REQUEST: ${DATASET_MAX_SEGMENTS_PER_REQUEST:-0}
@@ -314,6 +314,13 @@ x-shared-env: &shared-api-worker-env
   WORKFLOW_SCHEDULE_POLLER_BATCH_SIZE: ${WORKFLOW_SCHEDULE_POLLER_BATCH_SIZE:-100}
   WORKFLOW_SCHEDULE_MAX_DISPATCH_PER_TICK: ${WORKFLOW_SCHEDULE_MAX_DISPATCH_PER_TICK:-0}
   TENANT_ISOLATED_TASK_CONCURRENCY: ${TENANT_ISOLATED_TASK_CONCURRENCY:-1}
+  ANNOTATION_IMPORT_FILE_SIZE_LIMIT: ${ANNOTATION_IMPORT_FILE_SIZE_LIMIT:-2}
+  ANNOTATION_IMPORT_MAX_RECORDS: ${ANNOTATION_IMPORT_MAX_RECORDS:-10000}
+  ANNOTATION_IMPORT_MIN_RECORDS: ${ANNOTATION_IMPORT_MIN_RECORDS:-1}
+  ANNOTATION_IMPORT_RATE_LIMIT_PER_MINUTE: ${ANNOTATION_IMPORT_RATE_LIMIT_PER_MINUTE:-5}
+  ANNOTATION_IMPORT_RATE_LIMIT_PER_HOUR: ${ANNOTATION_IMPORT_RATE_LIMIT_PER_HOUR:-20}
+  ANNOTATION_IMPORT_MAX_CONCURRENT: ${ANNOTATION_IMPORT_MAX_CONCURRENT:-5}
+  AMPLITUDE_API_KEY: ${AMPLITUDE_API_KEY:-}
 
 services:
   # Init container to fix permissions
@@ -337,7 +344,7 @@ services:
 
   # API service
   api:
-    image: langgenius/dify-api:1.10.1-fix.1
+    image: langgenius/dify-api:1.11.1
     restart: always
     environment:
       # Use the shared environment variables.
@@ -366,7 +373,7 @@ services:
   # worker service
   # The Celery worker for processing all queues (dataset, workflow, mail, etc.)
   worker:
-    image: langgenius/dify-api:1.10.1-fix.1
+    image: langgenius/dify-api:1.11.1
     restart: always
     environment:
       # Use the shared environment variables.
@@ -393,7 +400,7 @@ services:
   # worker_beat service
   # Celery beat for scheduling periodic tasks.
   worker_beat:
-    image: langgenius/dify-api:1.10.1-fix.1
+    image: langgenius/dify-api:1.11.1
     restart: always
     environment:
       # Use the shared environment variables.
@@ -411,11 +418,12 @@ services:
 
   # Frontend web application.
   web:
-    image: langgenius/dify-web:1.10.1-fix.1
+    image: langgenius/dify-web:1.11.1
     restart: always
     environment:
       CONSOLE_API_URL: ${CONSOLE_API_URL:-}
       APP_API_URL: ${APP_API_URL:-}
+      AMPLITUDE_API_KEY: ${AMPLITUDE_API_KEY:-}
       NEXT_PUBLIC_COOKIE_DOMAIN: ${NEXT_PUBLIC_COOKIE_DOMAIN:-}
       SENTRY_DSN: ${WEB_SENTRY_DSN:-}
       NEXT_TELEMETRY_DISABLED: ${NEXT_TELEMETRY_DISABLED:-0}
@@ -481,7 +489,7 @@ services:
 
   # plugin daemon
   plugin_daemon:
-    image: langgenius/dify-plugin-daemon:0.4.1-local
+    image: langgenius/dify-plugin-daemon:0.5.1-local
     restart: always
     environment:
       # Use the shared environment variables.
@@ -574,7 +582,7 @@ services:
       NGINX_PROXY_READ_TIMEOUT: ${NGINX_PROXY_READ_TIMEOUT:-3600s}
       NGINX_PROXY_SEND_TIMEOUT: ${NGINX_PROXY_SEND_TIMEOUT:-3600s}
     ports:
-      - '${EXPOSE_NGINX_PORT:-80}:${NGINX_PORT:-80}'
+      - "${EXPOSE_NGINX_PORT:-80}:${NGINX_PORT:-80}"
 
 networks:
   # create a network between sandbox, api and ssrf_proxy, and can not access outside.
